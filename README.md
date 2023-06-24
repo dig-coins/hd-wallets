@@ -8,9 +8,13 @@ Golang实现的多币种HD钱包
 - LTC
 - DOGE
 - DASH
+- ETH
+- ETC
 - BCH
 - QTUM
 - USDT
+- IOST
+- USDC
 
 
 ## 安装

@@ -3,11 +3,14 @@ package hdwallet
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
-
+	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/btcutil/hdkeychain"
 	"github.com/btcsuite/btcd/txscript"
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
+	"github.com/dig-coins/hd-wallet/bech32"
+	"github.com/dig-coins/hd-wallet/helpers/bnbhelper"
 )
 
 // Key struct
@@ -228,7 +231,6 @@ func (k *Key) AddressP2WPKHInP2SH() (string, error) {
 	return addr1.EncodeAddress(), nil
 }
 
-/*
 // AddressBNB 生成bnb地址
 // network mainnet主网地址 testnet测试网地址
 func (k *Key) AddressBNB(network string) (string, error) {
@@ -252,8 +254,8 @@ func (k *Key) AddressBNB(network string) (string, error) {
 
 	var keyBytesArray [32]byte
 	copy(keyBytesArray[:], priBytes[:32])
-	priKey := secp256k1.PrivKeySecp256k1(keyBytesArray)
-	addr := types.AccAddress(priKey.PubKey().Address())
+	priKey := secp256k1.PrivKeyFromBytes(keyBytesArray[:])
+	addr := bnbhelper.AccAddress(bnbhelper.PubKeyToAddress(priKey.PubKey().SerializeCompressed()))
 
 	bech32Addr, err := bech32.ConvertAndEncode(hrp, addr.Bytes())
 	if err != nil {
@@ -262,24 +264,3 @@ func (k *Key) AddressBNB(network string) (string, error) {
 
 	return bech32Addr, nil
 }
-
-
-func (k *Key) AddressFIL(network string) (string, error) {
-
-	switch network {
-	case MAINNET:
-		filaddr.CurrentNetwork = filaddr.Mainnet
-	case TESTNET:
-		filaddr.CurrentNetwork = filaddr.Testnet
-	default:
-		filaddr.CurrentNetwork = filaddr.Mainnet
-	}
-
-	addr, err := local.WalletPrivateToAddress(local.ActSigType(filtypes.KTSecp256k1), k.Private.Serialize())
-	if err != nil {
-		return "", err
-	}
-
-	return addr.String(), nil
-}
-*/

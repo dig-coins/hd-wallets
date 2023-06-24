@@ -67,5 +67,9 @@ func main() {
 		fnPrint(hdwallet.ZeroQuote+44, idx, hdwallet.LTC, "LTC")
 	}
 
+	for idx := uint32(0); idx < 4; idx++ {
+		fnPrint(hdwallet.ZeroQuote+44, idx, hdwallet.DOGE, "DOGE")
+	}
+
 	time.Sleep(time.Hour)
 }

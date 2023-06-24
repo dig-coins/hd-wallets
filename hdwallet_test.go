@@ -58,4 +58,10 @@ func TestHDWallet(t *testing.T) {
 	wallet, _ = master.GetWallet(hdwallet.CoinType(hdwallet.DOGE))
 	address, _ = wallet.GetAddress()
 	fmt.Println("DOGE:", address)
+
+	wallet, _ = master.GetWallet(hdwallet.CoinType(hdwallet.BNB))
+	wallet.GetKey().PublicHex(false)
+	fmt.Println("BNB私钥：", wallet.GetKey().PrivateHex())
+	address, _ = wallet.GetKey().AddressBNB(hdwallet.MAINNET)
+	fmt.Println("BNB: ", address)
 }
