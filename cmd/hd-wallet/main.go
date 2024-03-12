@@ -39,7 +39,7 @@ func main() {
 	fnPrint := func(purpose, addressIndex, coinType uint32, coinName string) {
 		wallet, _ := master.GetWallet(hdwallet.Purpose(purpose), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
 
-		var address, addressSegWit, wifPrivateKey string
+		var address, addressSegWit, wifPrivateKey, addressSegWitNative string
 
 		address, err = wallet.GetAddress()
 		if err != nil {
@@ -51,16 +51,28 @@ func main() {
 			panic(err)
 		}
 
+		addressSegWitNative, err = wallet.GetKey().AddressP2WPKH()
+		if err != nil {
+			panic(err)
+		}
+
 		wifPrivateKey, err = wallet.GetKey().PrivateWIF(true)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("%s Index %d: %s, %s, %s\n", coinName, addressIndex, wifPrivateKey, address, addressSegWit)
+		pubKeyHex := wallet.GetKey().PublicHex(true)
+
+		fmt.Printf("%s Index %d:\n  privateKey:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n  addressSegWitNative:%s\n----------\n",
+			coinName, addressIndex, wifPrivateKey, pubKeyHex, address, addressSegWit, addressSegWitNative)
 	}
 
 	for idx := uint32(0); idx < 4; idx++ {
 		fnPrint(hdwallet.ZeroQuote+49, idx, hdwallet.BTC, "BTC")
+	}
+
+	for idx := uint32(0); idx < 4; idx++ {
+		fnPrint(hdwallet.ZeroQuote+49, idx, hdwallet.BTCTestnet, "BTCTestnet")
 	}
 
 	for idx := uint32(0); idx < 4; idx++ {
