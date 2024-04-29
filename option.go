@@ -7,6 +7,15 @@ import (
 	"github.com/btcsuite/btcd/chaincfg"
 )
 
+const (
+	PathLevelAuto    = -1
+	PathLevelPurpose = iota - 1
+	PathLevelCoinType
+	PathLevelAccount
+	PathLevelChange
+	PathLevelAddressIndex
+)
+
 // default options
 var (
 	DefaultParams = &BTCParams
@@ -44,6 +53,10 @@ type Options struct {
 	Account      uint32
 	Change       uint32
 	AddressIndex uint32
+
+	// level for derive from public key
+	MinPathLevel int // [
+	MaxPathLevel int // ]
 }
 
 func newOptions(opts ...Option) *Options {
@@ -56,10 +69,20 @@ func newOptions(opts ...Option) *Options {
 		Account:      DefaultAccount,
 		Change:       DefaultChange,
 		AddressIndex: DefaultAddressIndex,
+		MinPathLevel: PathLevelPurpose,
+		MaxPathLevel: PathLevelAddressIndex,
 	}
 
 	for _, o := range opts {
 		o(opt)
+	}
+
+	if opt.MinPathLevel <= 0 {
+		opt.MinPathLevel = PathLevelPurpose
+	}
+
+	if opt.MaxPathLevel <= 0 {
+		opt.MaxPathLevel = PathLevelAddressIndex
 	}
 
 	return opt
@@ -143,6 +166,18 @@ func Change(c uint32) Option {
 func AddressIndex(a uint32) Option {
 	return func(o *Options) {
 		o.AddressIndex = a
+	}
+}
+
+func MinLevel(c int) Option {
+	return func(o *Options) {
+		o.MinPathLevel = c
+	}
+}
+
+func MaxLevel(c int) Option {
+	return func(o *Options) {
+		o.MaxPathLevel = c
 	}
 }
 

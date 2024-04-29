@@ -1,11 +1,13 @@
 package hdwallet_test
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"testing"
 
 	hdwallet "github.com/dig-coins/hd-wallet"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHDWallet(t *testing.T) {
@@ -64,4 +66,58 @@ func TestHDWallet(t *testing.T) {
 	fmt.Println("BNB私钥：", wallet.GetKey().PrivateHex())
 	address, _ = wallet.GetKey().AddressBNB(hdwallet.MAINNET)
 	fmt.Println("BNB: ", address)
+}
+
+func dumpWallet(t *testing.T, wallet hdwallet.Wallet) {
+	address, err := wallet.GetAddress()
+	assert.Nil(t, err)
+
+	privateKey, err := wallet.GetPrivateKey()
+	if !errors.Is(err, hdwallet.ErrPrivateKeyNotExists) {
+		assert.Nil(t, err)
+	}
+
+	t.Logf("address: %s\n", address)
+	t.Logf("privateKey: %s\n", privateKey)
+	t.Logf("publicKey: %s\n", wallet.GetKey().PublicHex(true))
+}
+
+func TestHDWallet2(t *testing.T) {
+	seed, _ := hdwallet.NewSeed(os.Getenv("mnemonic"), "", "")
+
+	master, err := hdwallet.NewKey(
+		hdwallet.Seed(seed),
+	)
+	assert.Nil(t, err)
+
+	{
+		wallet, e := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+49 /*44*/),
+			hdwallet.CoinType(hdwallet.BTC), hdwallet.AddressIndex(1))
+		assert.Nil(t, e)
+		dumpWallet(t, wallet)
+	}
+
+	wallet, err := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+49 /*44*/),
+		hdwallet.CoinType(hdwallet.BTC), hdwallet.MaxLevel(hdwallet.PathLevelAccount))
+	assert.Nil(t, err)
+
+	wallet1, err := wallet.GetKey().GetWallet(hdwallet.AddressIndex(1),
+		hdwallet.MinLevel(hdwallet.PathLevelChange), hdwallet.MaxLevel(hdwallet.PathLevelAuto))
+	assert.Nil(t, err)
+
+	dumpWallet(t, wallet1)
+
+	extPub, err := wallet.GetKey().Extended.Neuter()
+	assert.Nil(t, err)
+
+	extPubS := extPub.String()
+	t.Log(extPubS)
+
+	master2, err := hdwallet.NewKeyFromString(extPubS)
+	assert.Nil(t, err)
+
+	wallet2, err := master2.GetWallet(hdwallet.AddressIndex(1), hdwallet.MinLevel(hdwallet.PathLevelChange),
+		hdwallet.MaxLevel(hdwallet.PathLevelAuto))
+	assert.Nil(t, err)
+	dumpWallet(t, wallet2)
 }

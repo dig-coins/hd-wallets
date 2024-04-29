@@ -3,7 +3,9 @@ package hdwallet
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
+	"errors"
 	"fmt"
+
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/btcutil/hdkeychain"
@@ -11,6 +13,10 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/dig-coins/hd-wallet/bech32"
 	"github.com/dig-coins/hd-wallet/helpers/bnbhelper"
+)
+
+var (
+	ErrPrivateKeyNotExists = errors.New("private key not exists")
 )
 
 // Key struct
@@ -61,12 +67,34 @@ func NewKey(opts ...Option) (*Key, error) {
 	return key, nil
 }
 
+func NewKeyFromString(s string) (*Key, error) {
+	extended, err := hdkeychain.NewKeyFromString(s)
+	if err != nil {
+		return nil, err
+	}
+
+	key := &Key{
+		Extended: extended,
+	}
+
+	err = key.init()
+	if err != nil {
+		return nil, err
+	}
+
+	return key, nil
+}
+
 func (k *Key) init() error {
 	var err error
 
-	k.Private, err = k.Extended.ECPrivKey()
-	if err != nil {
-		return err
+	if k.Extended.IsPrivate() {
+		k.Private, err = k.Extended.ECPrivKey()
+		if err != nil {
+			return err
+		}
+
+		k.PrivateECDSA = k.Private.ToECDSA()
 	}
 
 	k.Public, err = k.Extended.ECPubKey()
@@ -74,8 +102,8 @@ func (k *Key) init() error {
 		return err
 	}
 
-	k.PrivateECDSA = k.Private.ToECDSA()
-	k.PublicECDSA = &k.PrivateECDSA.PublicKey
+	k.PublicECDSA = k.Public.ToECDSA()
+
 	return nil
 }
 
@@ -94,7 +122,14 @@ func (k *Key) GetChildKey(opts ...Option) (*Key, error) {
 	}
 
 	extended := k.Extended
-	for _, i := range no.GetPath() {
+	for idx, i := range no.GetPath() {
+		if idx < o.MinPathLevel {
+			continue
+		}
+		if idx > o.MaxPathLevel {
+			break
+		}
+
 		extended, err = extended.Derive(i)
 		if err != nil {
 			return nil, err
@@ -132,11 +167,19 @@ func (k *Key) GetWallet(opts ...Option) (Wallet, error) {
 
 // PrivateHex generate private key to string by hex
 func (k *Key) PrivateHex() string {
+	if k.Private == nil {
+		return ""
+	}
+
 	return hex.EncodeToString(k.Private.Serialize())
 }
 
 // PrivateWIF generate private key to string by wif
 func (k *Key) PrivateWIF(compress bool) (string, error) {
+	if k.Private == nil {
+		return "", ErrPrivateKeyNotExists
+	}
+
 	wif, err := btcutil.NewWIF(k.Private, k.Opt.Params, compress)
 	if err != nil {
 		return "", err
