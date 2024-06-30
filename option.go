@@ -28,7 +28,7 @@ var (
 	// child key options
 
 	DefaultPurpose      = ZeroQuote + 44
-	DefaultCoinType     = BTC
+	DefaultCoinType     = Zero
 	DefaultAccount      = ZeroQuote
 	DefaultChange       = Zero
 	DefaultAddressIndex = Zero

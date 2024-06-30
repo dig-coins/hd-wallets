@@ -61,10 +61,12 @@ func main() {
 			panic(err)
 		}
 
+		privateKeyHex := wallet.GetKey().PrivateHex()
+
 		pubKeyHex := wallet.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  privateKey:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n  addressSegWitNative:%s\n----------\n",
-			coinName, addressIndex, wifPrivateKey, pubKeyHex, address, addressSegWit, addressSegWitNative)
+		fmt.Printf("%s Index %d:\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n  addressSegWitNative:%s\n----------\n",
+			coinName, addressIndex, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, addressSegWitNative)
 	}
 
 	for idx := uint32(0); idx < 4; idx++ {
@@ -81,6 +83,14 @@ func main() {
 
 	for idx := uint32(0); idx < 4; idx++ {
 		fnPrint(hdwallet.ZeroQuote+44, idx, hdwallet.DOGE, "DOGE")
+	}
+
+	for idx := uint32(0); idx < 4; idx++ {
+		fnPrint(hdwallet.ZeroQuote+44, idx, hdwallet.TRX, "TRX")
+	}
+
+	for idx := uint32(0); idx < 4; idx++ {
+		fnPrint(hdwallet.ZeroQuote+44, idx, hdwallet.ETH, "ETH")
 	}
 
 	time.Sleep(time.Hour)

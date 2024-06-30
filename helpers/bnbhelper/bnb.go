@@ -3,7 +3,7 @@ package bnbhelper
 import (
 	"crypto/sha256"
 
-	"golang.org/x/crypto/ripemd160"
+	"golang.org/x/crypto/ripemd160" // nolint: staticcheck
 )
 
 // AccAddress a wrapper around bytes meant to represent an account address.

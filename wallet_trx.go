@@ -19,7 +19,7 @@ type trx struct {
 	key    *Key
 
 	// trc20 token
-	contract string
+	//contract string
 }
 
 func newTRX(key *Key) Wallet {

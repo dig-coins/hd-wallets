@@ -101,7 +101,7 @@ func TestHDWallet2(t *testing.T) {
 		hdwallet.CoinType(hdwallet.BTC), hdwallet.MaxLevel(hdwallet.PathLevelAccount))
 	assert.Nil(t, err)
 
-	wallet1, err := wallet.GetKey().GetWallet(hdwallet.AddressIndex(1),
+	wallet1, err := wallet.GetKey().GetWallet(hdwallet.AddressIndex(1), hdwallet.CoinType(hdwallet.BTC),
 		hdwallet.MinLevel(hdwallet.PathLevelChange), hdwallet.MaxLevel(hdwallet.PathLevelAuto))
 	assert.Nil(t, err)
 
@@ -116,7 +116,7 @@ func TestHDWallet2(t *testing.T) {
 	master2, err := hdwallet.NewKeyFromString(extPubS)
 	assert.Nil(t, err)
 
-	wallet2, err := master2.GetWallet(hdwallet.AddressIndex(1), hdwallet.MinLevel(hdwallet.PathLevelChange),
+	wallet2, err := master2.GetWallet(hdwallet.AddressIndex(1), hdwallet.CoinType(hdwallet.BTC), hdwallet.MinLevel(hdwallet.PathLevelChange),
 		hdwallet.MaxLevel(hdwallet.PathLevelAuto))
 	assert.Nil(t, err)
 	dumpWallet(t, wallet2)

@@ -10,7 +10,7 @@ type bnb struct {
 	key    *Key
 
 	// bnb token
-	contract string
+	//contract string
 }
 
 func newBNB(key *Key) Wallet {
