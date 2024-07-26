@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/btcsuite/btcd/btcec/v2/schnorr"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/btcutil/hdkeychain"
 	"github.com/btcsuite/btcd/txscript"
@@ -272,6 +273,18 @@ func (k *Key) AddressP2WPKHInP2SH() (string, error) {
 	}
 
 	return addr1.EncodeAddress(), nil
+}
+
+// AddressTapRoot generate public key to taproot address
+func (k *Key) AddressTapRoot() (string, error) {
+	addressX, err := btcutil.NewAddressTaproot(
+		schnorr.SerializePubKey(txscript.ComputeTaprootKeyNoScript(k.Public)), k.Opt.Params,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return addressX.AddressSegWit.EncodeAddress(), nil
 }
 
 // AddressBNB 生成bnb地址
