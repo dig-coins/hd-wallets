@@ -2,8 +2,10 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	hdwallet "github.com/dig-coins/hd-wallet"
@@ -12,6 +14,10 @@ import (
 const mnemonicFile = "mnemonic.txt"
 
 func main() {
+	var seedPassword string
+	flag.StringVar(&seedPassword, "p", "", "password of seed")
+	flag.Parse()
+
 	d, err := os.ReadFile(mnemonicFile)
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
@@ -24,7 +30,10 @@ func main() {
 		d = []byte(mnemonic)
 	}
 
-	seed, err := hdwallet.NewSeed(string(d), "", "")
+	s := string(d)
+	s = strings.Trim(s, " \r\n\t")
+
+	seed, err := hdwallet.NewSeed(s, seedPassword, "")
 	if err != nil {
 		panic(err)
 	}
