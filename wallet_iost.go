@@ -1,4 +1,4 @@
-package hdwallet
+package hdwallets
 
 func init() {
 	coins[IOST] = newIOST

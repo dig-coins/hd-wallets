@@ -1,4 +1,4 @@
-package hdwallet
+package hdwallets
 
 import (
 	"github.com/dig-coins/hd-wallets/helpers/ethhelper"

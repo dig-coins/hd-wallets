@@ -1,4 +1,4 @@
-package hdwallet
+package hdwallets
 
 var coins = make(map[uint32]func(*Key) Wallet)
 

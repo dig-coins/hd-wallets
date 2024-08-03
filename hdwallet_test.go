@@ -1,4 +1,4 @@
-package hdwallet_test
+package hdwallets_test
 
 import (
 	"errors"

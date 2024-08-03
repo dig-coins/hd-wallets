@@ -1,4 +1,4 @@
-package hdwallet
+package hdwallets
 
 import "github.com/btcsuite/btcd/chaincfg"
 
