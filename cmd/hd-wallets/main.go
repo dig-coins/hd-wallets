@@ -9,6 +9,7 @@ import (
 	"time"
 
 	hdwallet "github.com/dig-coins/hd-wallet"
+	"github.com/howeyc/gopass"
 )
 
 const mnemonicFile = "mnemonic.txt"
@@ -17,6 +18,15 @@ func main() {
 	var seedPassword string
 	flag.StringVar(&seedPassword, "p", "", "password of seed")
 	flag.Parse()
+
+	if seedPassword == "<null>" {
+		v, e := gopass.GetPasswdPrompt("input your password", true, os.Stdin, os.Stdout)
+		if e != nil {
+			panic(e)
+		}
+
+		seedPassword = string(v)
+	}
 
 	d, err := os.ReadFile(mnemonicFile)
 	if err != nil {
