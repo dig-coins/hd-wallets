@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	hdwallet "github.com/dig-coins/hd-wallet"
+	hdwallet "github.com/dig-coins/hd-wallets"
 	"github.com/howeyc/gopass"
 )
 

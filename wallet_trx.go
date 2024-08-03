@@ -3,7 +3,7 @@ package hdwallet
 import (
 	"crypto/ecdsa"
 	"crypto/sha256"
-	"github.com/dig-coins/hd-wallet/helpers/ethhelper"
+	"github.com/dig-coins/hd-wallets/helpers/ethhelper"
 	"math/big"
 
 	"github.com/shengdoushi/base58"

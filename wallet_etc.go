@@ -1,7 +1,7 @@
 package hdwallet
 
 import (
-	"github.com/dig-coins/hd-wallet/helpers/ethhelper"
+	"github.com/dig-coins/hd-wallets/helpers/ethhelper"
 )
 
 func init() {

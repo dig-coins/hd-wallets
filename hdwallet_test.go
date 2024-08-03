@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	hdwallet "github.com/dig-coins/hd-wallet"
+	hdwallet "github.com/dig-coins/hd-wallets"
 	"github.com/stretchr/testify/assert"
 )
 

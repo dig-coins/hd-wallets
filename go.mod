@@ -1,4 +1,4 @@
-module github.com/dig-coins/hd-wallet
+module github.com/dig-coins/hd-wallets
 
 go 1.16
 

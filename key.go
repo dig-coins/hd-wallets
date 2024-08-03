@@ -12,8 +12,8 @@ import (
 	"github.com/btcsuite/btcd/btcutil/hdkeychain"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
-	"github.com/dig-coins/hd-wallet/bech32"
-	"github.com/dig-coins/hd-wallet/helpers/bnbhelper"
+	"github.com/dig-coins/hd-wallets/bech32"
+	"github.com/dig-coins/hd-wallets/helpers/bnbhelper"
 )
 
 var (
