@@ -32,6 +32,10 @@ const (
 	BNB        = ZeroQuote + 714
 	FIL        = ZeroQuote + 461
 
+	//
+
+	BTCRegTest = ZeroQuote + 6000
+
 	// btc token
 
 	USDT = BTCToken + 1
@@ -49,10 +53,11 @@ const (
 )
 
 var coinTypes = map[uint32]uint32{
-	USDT: BTC,
-	IOST: ETH,
-	USDC: ETH,
-	TRX:  TRX,
-	BNB:  BNB,
-	FIL:  FIL,
+	USDT:       BTC,
+	IOST:       ETH,
+	USDC:       ETH,
+	TRX:        TRX,
+	BNB:        BNB,
+	FIL:        FIL,
+	BTCRegTest: BTCTestnet,
 }
