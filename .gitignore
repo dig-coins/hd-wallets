@@ -2,3 +2,9 @@
 /*.exe
 /mnemonic.tx*
 /dest
+/datas
+/*.yaml
+/local-*
+/dest.*
+/mnemonic.txt
+/sec-mnemonic.dat

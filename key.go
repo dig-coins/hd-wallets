@@ -4,7 +4,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
-	"fmt"
+	"github.com/GizmoVault/gotools/base/errorx"
 
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcec/v2/schnorr"
@@ -284,7 +284,7 @@ func (k *Key) AddressTapRoot() (string, error) {
 		return "", err
 	}
 
-	return addressX.AddressSegWit.EncodeAddress(), nil
+	return addressX.EncodeAddress(), nil
 }
 
 // AddressBNB 生成bnb地址
@@ -305,7 +305,7 @@ func (k *Key) AddressBNB(network string) (string, error) {
 	}
 
 	if len(priBytes) != 32 {
-		return "", fmt.Errorf("Len of Keybytes is not equal to 32 ")
+		return "", errorx.NewEx(errorx.CodeErrInvalidArgs, "Len of Keybytes is not equal to 32 ")
 	}
 
 	var keyBytesArray [32]byte
