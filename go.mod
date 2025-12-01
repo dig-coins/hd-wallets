@@ -3,7 +3,7 @@ module github.com/dig-coins/hd-wallets
 go 1.24.2
 
 require (
-	github.com/GizmoVault/gotools v0.0.0
+	github.com/GizmoVault/gotools v0.0.4
 	github.com/btcsuite/btcd v0.23.4
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil v1.1.3
@@ -29,4 +29,4 @@ require (
 	golang.org/x/term v0.37.0 // indirect
 )
 
-replace github.com/GizmoVault/gotools => ../../GizmoVault/gotools
+//replace github.com/GizmoVault/gotools => ../../GizmoVault/gotools
