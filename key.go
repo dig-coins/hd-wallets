@@ -4,8 +4,10 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
-	"github.com/GizmoVault/gotools/base/errorx"
+	"fmt"
+	"strconv"
 
+	"github.com/GizmoVault/gotools/base/errorx"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcec/v2/schnorr"
 	"github.com/btcsuite/btcd/btcutil"
@@ -319,4 +321,50 @@ func (k *Key) AddressBNB(network string) (string, error) {
 	}
 
 	return bech32Addr, nil
+}
+
+func (k *Key) formatPath1(v uint32) string {
+	if v < ZeroQuote {
+		return strconv.Itoa(int(v))
+	}
+
+	return fmt.Sprintf("%d'", v-ZeroQuote)
+}
+
+func (k *Key) DerivationPath() (r string) {
+	level := k.Opt.MaxPathLevel
+
+	if level == PathLevelAuto {
+		level = PathLevelAddressIndex
+	}
+
+	r = "m"
+
+	r += "/" + k.formatPath1(k.Opt.Purpose)
+
+	if level < PathLevelCoinType {
+		return
+	}
+
+	r += "/" + k.formatPath1(k.Opt.CoinType)
+
+	if level < PathLevelAccount {
+		return
+	}
+
+	r += "/" + k.formatPath1(k.Opt.Account)
+
+	if level < PathLevelChange {
+		return
+	}
+
+	r += "/" + k.formatPath1(k.Opt.Change)
+
+	if level < PathLevelAddressIndex {
+		return
+	}
+
+	r += "/" + k.formatPath1(k.Opt.AddressIndex)
+
+	return
 }
