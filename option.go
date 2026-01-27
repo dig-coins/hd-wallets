@@ -136,6 +136,10 @@ func Seed(s []byte) Option {
 
 // Purpose set to options
 func Purpose(p uint32) Option {
+	if p < ZeroQuote {
+		panic("purpose must be greater than ZeroQuote")
+	}
+
 	return func(o *Options) {
 		o.Purpose = p
 	}
@@ -143,6 +147,10 @@ func Purpose(p uint32) Option {
 
 // CoinType set to options
 func CoinType(c uint32) Option {
+	if c < ZeroQuote {
+		panic("purpose must be greater than ZeroQuote")
+	}
+
 	return func(o *Options) {
 		o.CoinType = c
 	}
@@ -150,6 +158,10 @@ func CoinType(c uint32) Option {
 
 // Account set to options
 func Account(a uint32) Option {
+	if a < ZeroQuote {
+		panic("purpose must be greater than ZeroQuote")
+	}
+
 	return func(o *Options) {
 		o.Account = a
 	}

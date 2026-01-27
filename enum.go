@@ -15,7 +15,45 @@ const (
 	ETHToken  uint32 = 0x20000000
 )
 
-// wallet type from bip44
+// wallet coin type
+
+const (
+	// PurposeType44
+	// BIP-44
+	// Legacy
+	// P2PKH,P2SH
+	// 1... | [m|n]...
+	PurposeType44 = ZeroQuote + 44
+
+	// PurposeType49
+	// BIP-49
+	// Nested SegWit
+	// P2SH-P2WPKH
+	// 3... | 2...
+	PurposeType49 = ZeroQuote + 49
+
+	// PurposeType84
+	// BIP-84
+	// Native SegWit
+	// P2WPKH
+	// bc1q... | tb1q...
+	PurposeType84 = ZeroQuote + 84
+
+	// PurposeType86
+	// BIP-86
+	// Native Taproot
+	// P2TR
+	// bc1p... | tb1p...
+	PurposeType86 = ZeroQuote + 86
+)
+
+// wallet account
+
+func HardenAccount(account uint32) uint32 {
+	return ZeroQuote + account
+}
+
+// wallet purpose type from bip44
 const (
 	// https://github.com/satoshilabs/slips/blob/master/slip-0044.md#registered-coin-types
 

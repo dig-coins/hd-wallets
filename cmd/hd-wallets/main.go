@@ -164,6 +164,9 @@ func main() {
 		panic(err)
 	}
 
+	publicKey, _ := master.Extended.ECPubKey()
+	fmt.Printf("MasterFingerprint: %s\n\n\n", hdwallet.GetFingerprintString(publicKey.SerializeCompressed()))
+
 	fnGetX := func(extendedKey *hdkeychain.ExtendedKey) (s string) {
 		if !extendedKey.IsPrivate() {
 			s += fmt.Sprintf("Derivation key[xPub]: %s\n", extendedKey.String())
@@ -190,11 +193,14 @@ func main() {
 	}
 
 	fnPrintBTC := func(addressIndex, coinType uint32, coinName string) {
+		// "m/86'/1'/0'/0/0"
+		// m / purpose' / coin_type' / account' / change / address_index
 		var address, addressSegWit, wifPrivateKey, addressSegWitNative, addressTaproot string
 
-		wallet44, _ := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+44), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+44), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
+		wallet44, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType44), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
+		wallet, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType44), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
 			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
+		deriveKeyPath := fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType44-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
 
 		address, err = wallet44.GetAddress()
 		if err != nil {
@@ -223,13 +229,14 @@ func main() {
 
 		pubKeyHex := wallet44.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
-			coinName+"-44", addressIndex, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
+			coinName+"-44", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
 		//
 
-		wallet49, _ := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+49), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+49), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
+		wallet49, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType49), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
+		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType49), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
 			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
+		deriveKeyPath = fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType49-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
 
 		address, err = wallet49.GetAddress()
 		if err != nil {
@@ -258,14 +265,15 @@ func main() {
 
 		pubKeyHex = wallet49.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
-			coinName+"-49-Nested SegWit[P2SH]", addressIndex, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
+			coinName+"-49-Nested SegWit[P2SH]", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
 
 		//
 
-		wallet84, _ := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+84), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+84), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
+		wallet84, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType84), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
+		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType84), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
 			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
+		deriveKeyPath = fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType84-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
 
 		addressSegWitNative, err = wallet84.GetKey().AddressP2WPKH()
 		if err != nil {
@@ -284,15 +292,16 @@ func main() {
 		privateKeyHex = wallet84.GetKey().PrivateHex()
 
 		pubKeyHex = wallet84.GetKey().PublicHex(true)
-		fmt.Printf("%s Index %d:\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressSegWitNative:%s\nxKey:%s\n----------\n",
-			coinName+"-84-Native SegWit[Bech32]", addressIndex, wifPrivateKey, privateKeyHex, pubKeyHex, addressSegWitNative,
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressSegWitNative:%s\nxKey:%s\n----------\n",
+			coinName+"-84-Native SegWit[Bech32]", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, addressSegWitNative,
 			fnGetX(wallet.GetKey().Extended))
 
 		//
 
-		wallet86, _ := master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+86), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.ZeroQuote+86), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
+		wallet86, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType86), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
+		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType86), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
 			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
+		deriveKeyPath = fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType86-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
 
 		addressTaproot, err = wallet86.GetKey().AddressTapRoot()
 		if err != nil {
@@ -307,8 +316,8 @@ func main() {
 
 		pubKeyHex = wallet86.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressTaproot:%s\nxKey:%s\n----------\n",
-			coinName+"-86-Taproot", addressIndex, wifPrivateKey, privateKeyHex, pubKeyHex, addressTaproot, fnGetX(wallet.GetKey().Extended))
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressTaproot:%s\nxKey:%s\n----------\n",
+			coinName+"-86-Taproot", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, addressTaproot, fnGetX(wallet.GetKey().Extended))
 	}
 
 	for idx := uint32(0); idx < uint32(deepLevel); idx++ {
