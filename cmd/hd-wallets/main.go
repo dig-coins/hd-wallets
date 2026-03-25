@@ -192,15 +192,16 @@ func main() {
 		return
 	}
 
-	fnPrintBTC := func(addressIndex, coinType uint32, coinName string) {
+	fnPrintBTC := func(addressIndex, coinType, account, change uint32, coinName string) {
 		// "m/86'/1'/0'/0/0"
 		// m / purpose' / coin_type' / account' / change / address_index
+
 		var address, addressSegWit, wifPrivateKey, addressSegWitNative, addressTaproot string
 
-		wallet44, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType44), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType44), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
-			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
-		deriveKeyPath := fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType44-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
+		wallet44, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType44), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.Change(change), hdwallet.AddressIndex(addressIndex))
+		wallet, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType44), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.MaxLevel(hdwallet.PathLevelAccount))
 
 		address, err = wallet44.GetAddress()
 		if err != nil {
@@ -229,14 +230,16 @@ func main() {
 
 		pubKeyHex := wallet44.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
-			coinName+"-44", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address[*]:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
+			coinName+"-44", addressIndex, wallet.GetKey().DerivationPath()+" "+wallet44.GetKey().DerivationPath(),
+			wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
+
 		//
 
-		wallet49, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType49), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType49), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
-			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
-		deriveKeyPath = fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType49-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
+		wallet49, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType49), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.Change(change), hdwallet.AddressIndex(addressIndex))
+		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType49), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.MaxLevel(hdwallet.PathLevelAccount))
 
 		address, err = wallet49.GetAddress()
 		if err != nil {
@@ -265,15 +268,16 @@ func main() {
 
 		pubKeyHex = wallet49.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit:%s\n xKey:%s\n----------\n",
-			coinName+"-49-Nested SegWit[P2SH]", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  address:%s\n  addressSegWit[*]:%s\n xKey:%s\n----------\n",
+			coinName+"-49-Nested SegWit[P2SH]", addressIndex, wallet.GetKey().DerivationPath()+" "+wallet49.GetKey().DerivationPath(),
+			wifPrivateKey, privateKeyHex, pubKeyHex, address, addressSegWit, fnGetX(wallet.GetKey().Extended))
 
 		//
 
-		wallet84, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType84), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType84), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
-			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
-		deriveKeyPath = fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType84-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
+		wallet84, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType84), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.Change(change), hdwallet.AddressIndex(addressIndex))
+		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType84), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.MaxLevel(hdwallet.PathLevelAccount))
 
 		addressSegWitNative, err = wallet84.GetKey().AddressP2WPKH()
 		if err != nil {
@@ -292,16 +296,18 @@ func main() {
 		privateKeyHex = wallet84.GetKey().PrivateHex()
 
 		pubKeyHex = wallet84.GetKey().PublicHex(true)
-		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressSegWitNative:%s\nxKey:%s\n----------\n",
-			coinName+"-84-Native SegWit[Bech32]", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, addressSegWitNative,
+
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressSegWitNative[*]:%s\nxKey:%s\n----------\n",
+			coinName+"-84-Native SegWit[Bech32]", addressIndex, wallet.GetKey().DerivationPath()+" "+wallet84.GetKey().DerivationPath(),
+			wifPrivateKey, privateKeyHex, pubKeyHex, addressSegWitNative,
 			fnGetX(wallet.GetKey().Extended))
 
 		//
 
-		wallet86, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType86), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex))
-		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType86), hdwallet.CoinType(coinType), hdwallet.AddressIndex(addressIndex),
+		wallet86, _ := master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType86), hdwallet.CoinType(coinType),
+			hdwallet.Account(account), hdwallet.Change(change), hdwallet.AddressIndex(addressIndex))
+		wallet, _ = master.GetWallet(hdwallet.Purpose(hdwallet.PurposeType86), hdwallet.CoinType(coinType), hdwallet.Account(account),
 			hdwallet.MaxLevel(hdwallet.PathLevelAccount))
-		deriveKeyPath = fmt.Sprintf("m/%d'/%d'/%d'/%d/%d", hdwallet.PurposeType86-hdwallet.ZeroQuote, coinType-hdwallet.ZeroQuote, 0, 0, addressIndex)
 
 		addressTaproot, err = wallet86.GetKey().AddressTapRoot()
 		if err != nil {
@@ -316,20 +322,34 @@ func main() {
 
 		pubKeyHex = wallet86.GetKey().PublicHex(true)
 
-		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressTaproot:%s\nxKey:%s\n----------\n",
-			coinName+"-86-Taproot", addressIndex, deriveKeyPath, wifPrivateKey, privateKeyHex, pubKeyHex, addressTaproot, fnGetX(wallet.GetKey().Extended))
+		fmt.Printf("%s Index %d:\n  deriveKeyPath: %s\n  privateKeyWIF:%s\n  privateKeyHex:%s\n  publicKey:%s\n  addressTaproot[*]:%s\nxKey:%s\n----------\n",
+			coinName+"-86-Taproot", addressIndex, wallet.GetKey().DerivationPath()+" "+wallet86.GetKey().DerivationPath(),
+			wifPrivateKey, privateKeyHex, pubKeyHex, addressTaproot, fnGetX(wallet.GetKey().Extended))
 	}
 
 	for idx := uint32(0); idx < uint32(deepLevel); idx++ {
-		fnPrintBTC(idx, hdwallet.BTC, "BTC")
+		for account := uint32(0); account < uint32(2); account++ {
+			for change := uint32(0); change <= 2; change++ {
+				fnPrintBTC(idx, hdwallet.BTC, hdwallet.HardenAccount(account), change, "BTC")
+			}
+		}
+
 	}
 
 	for idx := uint32(0); idx < uint32(deepLevel); idx++ {
-		fnPrintBTC(idx, hdwallet.BTCTestnet, "BTCTestnet")
+		for account := uint32(0); account < uint32(2); account++ {
+			for change := uint32(0); change <= 2; change++ {
+				fnPrintBTC(idx, hdwallet.BTCTestnet, hdwallet.HardenAccount(account), change, "BTCTestnet")
+			}
+		}
 	}
 
 	for idx := uint32(0); idx < uint32(deepLevel); idx++ {
-		fnPrintBTC(idx, hdwallet.BTCRegTest, "BTCRegTest")
+		for account := uint32(0); account < uint32(2); account++ {
+			for change := uint32(0); change <= 2; change++ {
+				fnPrintBTC(idx, hdwallet.BTCRegTest, hdwallet.HardenAccount(account), change, "BTCRegTest")
+			}
+		}
 	}
 
 	if !addressExists {
