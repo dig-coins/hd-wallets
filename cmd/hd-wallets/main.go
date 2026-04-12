@@ -313,6 +313,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		if addressTaproot == address1 {
+			address1Matched = true
+		}
+
 		wifPrivateKey, err = wallet86.GetKey().PrivateWIF(true)
 		if err != nil {
 			panic(err)

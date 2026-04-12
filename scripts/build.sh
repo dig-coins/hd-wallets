@@ -20,7 +20,7 @@ build_single() {
   fi
 }
 
-oa_es=(linux:amd64 windows:amd64:.exe darwin:amd64 darwin:arm64)
+oa_es=(linux:amd64 windows:amd64:.exe windows:arm64:.exe darwin:amd64 darwin:arm64)
 
 for oa in "${oa_es[@]}"
 do
